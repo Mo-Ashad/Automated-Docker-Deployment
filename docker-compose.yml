@@ -1,0 +1,22 @@
+# ===================================================================
+# Docker Compose: Run the Automated Docker Deployment app locally
+# ===================================================================
+
+services:
+  web:
+    build: .
+    image: automated-docker-app:latest
+    container_name: automated_docker_app
+    ports:
+      - "5000:5000"
+    environment:
+      - APP_VERSION=1.0.0
+      - APP_ENV=production
+      - PORT=5000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
