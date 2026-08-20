@@ -29,8 +29,12 @@ flowchart LR
 
 ```
 Automated-Docker-Deployment/
-├── app.py                  # Python Flask web application with healthcheck & dashboard
+├── app.py                  # Pure Python Flask application (endpoints & logic)
 ├── test_app.py             # Automated unit tests run by CI
+├── templates/
+│   └── index.html          # HTML dashboard template
+├── static/
+│   └── style.css           # CSS styling for dashboard
 ├── Dockerfile              # Well-commented Dockerfile for containerization
 ├── docker-compose.yml      # 1-command local container runner
 ├── requirements.txt        # Minimal dependencies (Flask, Pytest)

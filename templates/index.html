@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Docker Deployment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="badge-icon">🐳</div>
+            <div>
+                <h1>Automated Docker Deployment</h1>
+                <div class="subtitle">DevOps CI/CD Pipeline Demo App</div>
+            </div>
+        </div>
+
+        <div class="status-banner">
+            <div class="pulse-dot"></div>
+            <span>Container is running & healthy</span>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-label">App Version</div>
+                <div class="card-value" style="color: #38bdf8;">v{{ version }}</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Environment</div>
+                <div class="card-value" style="color: #facc15;">{{ environment }}</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Container / Hostname</div>
+                <div class="card-value">{{ hostname }}</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Server Time (UTC)</div>
+                <div class="card-value">{{ current_time }}</div>
+            </div>
+        </div>
+
+        <div class="pipeline-info">
+            <div class="pipeline-title">🚀 How this deployment worked:</div>
+            <div class="pipeline-steps">
+                1. Code pushed to GitHub repository<br>
+                2. GitHub Actions ran automated unit tests (pytest)<br>
+                3. Docker image built & pushed automatically<br>
+                4. Automated deployment script restarted the container
+            </div>
+        </div>
+
+        <div class="endpoints">
+            <a href="/health" class="btn btn-primary">Health Check Endpoint (/health)</a>
+            <a href="/api/info" class="btn btn-secondary">API Info Endpoint (/api/info)</a>
+        </div>
+    </div>
+</body>
+</html>

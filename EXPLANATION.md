@@ -79,9 +79,11 @@ sequenceDiagram
 
 ## 4. Line-by-Line Breakdown of Project Components
 
-### A. The Web Application (`app.py`)
-A lightweight web app with two critical DevOps features:
-- **DevOps Landing Page (`/`)**: Displays the running container's hostname, release version, and environment status.
+### A. The Web Application (`app.py`, `templates/`, `static/`)
+A pure Python Flask web app cleanly separated from frontend markup and styles:
+- **`app.py`**: Pure Python handling routing, server startup, and metadata.
+- **`templates/index.html`**: HTML dashboard template displaying container hostname, version, and status.
+- **`static/style.css`**: CSS stylesheet for modern styling.
 - **Health Check Endpoint (`/health`)**: Returns `{"status": "healthy"}`. In modern DevOps, orchestration tools and load balancers ping this URL every few seconds to verify the container is alive.
 
 ### B. The `Dockerfile`
