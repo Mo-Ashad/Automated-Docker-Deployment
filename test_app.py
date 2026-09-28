@@ -30,3 +30,21 @@ def test_api_info_endpoint(client):
     data = response.get_json()
     assert data["app_name"] == "Automated Docker Deployment App"
     assert "hostname" in data
+
+def test_404_error_handler(client):
+    """Test that requesting a non-existent route returns a structured 404 JSON error."""
+    response = client.get("/non-existent-endpoint")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data["error"] == "Not Found"
+    assert data["status_code"] == 404
+    assert "message" in data
+
+def test_405_error_handler(client):
+    """Test that using an unsupported HTTP method returns a structured 405 JSON error."""
+    response = client.post("/health")
+    assert response.status_code == 405
+    data = response.get_json()
+    assert data["error"] == "Method Not Allowed"
+    assert data["status_code"] == 405
+    assert "message" in data
