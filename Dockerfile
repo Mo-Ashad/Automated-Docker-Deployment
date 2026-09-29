@@ -28,9 +28,9 @@ COPY . .
 EXPOSE 5000
 
 # Step 7: Docker Healthcheck
-# Docker periodically verifies that our application is healthy
+# Docker periodically verifies that our application is healthy using dynamic PORT
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')" || exit 1
+  CMD python -c "import os, urllib.request; port = os.getenv('PORT', '5000'); urllib.request.urlopen(f'http://localhost:{port}/health')" || exit 1
 
 # Step 8: Start the Application
 CMD ["python", "app.py"]

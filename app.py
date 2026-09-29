@@ -37,6 +37,17 @@ def health():
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }), 200
 
+@app.route("/ready")
+def ready():
+    """Readiness probe used by container orchestrators to verify app is ready to receive traffic."""
+    return jsonify({
+        "status": "ready",
+        "ready": True,
+        "version": APP_VERSION,
+        "environment": APP_ENV,
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }), 200
+
 @app.route("/api/info")
 def info():
     """API endpoint providing system and container metadata."""

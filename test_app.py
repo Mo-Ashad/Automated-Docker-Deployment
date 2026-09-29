@@ -23,6 +23,15 @@ def test_health_endpoint(client):
     assert "version" in data
     assert "uptime_seconds" in data
 
+def test_ready_endpoint(client):
+    """Test that the readiness probe returns status 200 and ready JSON."""
+    response = client.get("/ready")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "ready"
+    assert data["ready"] is True
+    assert "version" in data
+
 def test_api_info_endpoint(client):
     """Test that the API info endpoint returns application metadata."""
     response = client.get("/api/info")
