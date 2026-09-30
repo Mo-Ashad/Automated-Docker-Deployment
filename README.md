@@ -71,7 +71,8 @@ Automated-Docker-Deployment/
    ```
 
 4. Open your browser and navigate to: **`http://localhost:5000`**
-   - Health check endpoint: **`http://localhost:5000/health`**
+   - Health check endpoint (Liveness): **`http://localhost:5000/health`**
+   - Readiness probe endpoint: **`http://localhost:5000/ready`**
    - API info endpoint: **`http://localhost:5000/api/info`**
 
 ---

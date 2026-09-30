@@ -14,9 +14,9 @@ set -e # Exit immediately if a command exits with a non-zero status
 # Configuration variables
 IMAGE_NAME="${DOCKER_IMAGE:-automated-docker-app}"
 IMAGE_TAG="${DOCKER_TAG:-latest}"
-CONTAINER_NAME="automated_docker_app"
-HOST_PORT="5000"
-CONTAINER_PORT="5000"
+CONTAINER_NAME="${CONTAINER_NAME:-automated_docker_app}"
+HOST_PORT="${HOST_PORT:-5000}"
+CONTAINER_PORT="${CONTAINER_PORT:-5000}"
 
 echo "========================================================"
 echo "🚀 Starting Automated Docker Deployment"
@@ -50,6 +50,7 @@ docker run -d \
     --name "${CONTAINER_NAME}" \
     --restart unless-stopped \
     -p "${HOST_PORT}:${CONTAINER_PORT}" \
+    -e PORT="${CONTAINER_PORT}" \
     -e APP_VERSION="1.0.0" \
     -e APP_ENV="production" \
     "${IMAGE_NAME}:${IMAGE_TAG}"
@@ -80,7 +81,8 @@ if [ "$HEALTHY" = true ]; then
 else
     echo "========================================================"
     echo "❌ Deployment Failed: Container did not pass health check!"
-    echo "Check container logs with: docker logs ${CONTAINER_NAME}"
+    echo "Recent container logs:"
+    docker logs --tail 25 "${CONTAINER_NAME}" 2>/dev/null || true
     echo "========================================================"
     exit 1
 fi

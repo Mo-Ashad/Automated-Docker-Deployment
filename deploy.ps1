@@ -47,6 +47,7 @@ docker run -d `
     --name $ContainerName `
     --restart unless-stopped `
     -p "${HostPort}:${ContainerPort}" `
+    -e PORT="$ContainerPort" `
     -e APP_VERSION="1.0.0" `
     -e APP_ENV="production" `
     "$ImageName:$ImageTag" | Out-Null
@@ -82,7 +83,8 @@ if ($healthy) {
 } else {
     Write-Host "========================================================" -ForegroundColor Red
     Write-Host "❌ Deployment Failed: Container did not pass health check!" -ForegroundColor Red
-    Write-Host "Check container logs with: docker logs $ContainerName" -ForegroundColor Red
+    Write-Host "Recent container logs:" -ForegroundColor Yellow
+    docker logs --tail 25 $ContainerName 2>$null
     Write-Host "========================================================" -ForegroundColor Red
     exit 1
 }

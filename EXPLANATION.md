@@ -84,7 +84,8 @@ A pure Python Flask web app cleanly separated from frontend markup and styles:
 - **`app.py`**: Pure Python handling routing, server startup, and metadata.
 - **`templates/index.html`**: HTML dashboard template displaying container hostname, version, and status.
 - **`static/style.css`**: CSS stylesheet for modern styling.
-- **Health Check Endpoint (`/health`)**: Returns `{"status": "healthy"}`. In modern DevOps, orchestration tools and load balancers ping this URL every few seconds to verify the container is alive.
+- **Health Check Endpoint (`/health`)**: Returns `{"status": "healthy"}`. In modern DevOps, orchestration tools (like Kubernetes and Docker) ping this liveness probe to verify that the container process is alive and responsive.
+- **Readiness Probe Endpoint (`/ready`)**: Returns `{"status": "ready", "ready": true}`. In production deployments, orchestrators ping this probe to ensure the container has finished initialization and is ready to accept incoming user traffic.
 
 ### B. The `Dockerfile`
 A recipe that tells Docker how to build the container image:
