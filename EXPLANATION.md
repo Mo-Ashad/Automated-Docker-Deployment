@@ -86,6 +86,7 @@ A pure Python Flask web app cleanly separated from frontend markup and styles:
 - **`static/style.css`**: CSS stylesheet for modern styling.
 - **Health Check Endpoint (`/health`)**: Returns `{"status": "healthy"}`. In modern DevOps, orchestration tools (like Kubernetes and Docker) ping this liveness probe to verify that the container process is alive and responsive.
 - **Readiness Probe Endpoint (`/ready`)**: Returns `{"status": "ready", "ready": true}`. In production deployments, orchestrators ping this probe to ensure the container has finished initialization and is ready to accept incoming user traffic.
+- **Metrics Endpoint (`/api/metrics`)**: Exposes live runtime diagnostics (uptime, Python environment, hostname) formatted for monitoring systems like Prometheus and Datadog.
 
 ### B. The `Dockerfile`
 A recipe that tells Docker how to build the container image:

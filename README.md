@@ -73,11 +73,28 @@ Automated-Docker-Deployment/
 4. Open your browser and navigate to: **`http://localhost:5000`**
    - Health check endpoint (Liveness): **`http://localhost:5000/health`**
    - Readiness probe endpoint: **`http://localhost:5000/ready`**
-   - API info endpoint: **`http://localhost:5000/api/info`**
+   - Application metadata endpoint: **`http://localhost:5000/api/info`**
+   - Prometheus runtime metrics endpoint: **`http://localhost:5000/api/metrics`**
 
 ---
 
-### Option 2: Run with Docker
+### Option 2: Run with Developer Makefile
+
+A standardized `Makefile` is provided for common development and container operations:
+
+```bash
+make install       # Install application dependencies
+make test          # Run automated unit tests with Pytest
+make run           # Run Flask application locally
+make docker-build  # Build Docker container image
+make docker-run    # Launch application container
+make docker-stop   # Gracefully stop running container
+make clean         # Clean temporary cache files
+```
+
+---
+
+### Option 3: Run with Docker
 
 1. **Build the Docker image:**
    ```bash
@@ -97,9 +114,9 @@ Automated-Docker-Deployment/
 
 ---
 
-### Option 3: Run with Docker Compose
+### Option 4: Run with Docker Compose
 
-Start the whole application with a single command:
+Start the application with CPU/memory limits and log rotation configured:
 ```bash
 docker compose up -d
 ```
@@ -111,9 +128,14 @@ docker compose down
 
 ---
 
-## 🔄 Automated Deployment Scripts
+## 🔄 Automated Deployment & Rollback Scripts
 
-To simulate an automated redeployment (pulling the latest image, stopping the old container, launching the new container, and verifying health):
+The deployment scripts automate the complete zero-downtime lifecycle:
+1. Pulls the latest container image from the registry.
+2. Backs up the running container image reference.
+3. Stops and replaces the old container with dynamic port bindings.
+4. Performs an automated health check loop.
+5. **Automatic Rollback**: If the new container fails health checks, automatically restores the previous working container and dumps error logs for diagnostics.
 
 - **On Linux / macOS / Git Bash:**
   ```bash
