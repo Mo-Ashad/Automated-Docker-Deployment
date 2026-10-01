@@ -32,9 +32,11 @@ else
     echo "ℹ Local image build fallback (or remote pull skipped)."
 fi
 
-# Step 2: Gracefully stop and remove the existing container if running
+# Step 2: Capture previous container image and gracefully stop old container
 echo "[2/4] 🛑 Checking for existing container..."
+PREVIOUS_IMAGE=""
 if [ "$(docker ps -q -f name=^/${CONTAINER_NAME}$)" ]; then
+    PREVIOUS_IMAGE=$(docker inspect --format='{{.Image}}' "${CONTAINER_NAME}" 2>/dev/null || true)
     echo "Stopping existing container: ${CONTAINER_NAME}..."
     docker stop "${CONTAINER_NAME}"
 fi
@@ -83,6 +85,20 @@ else
     echo "❌ Deployment Failed: Container did not pass health check!"
     echo "Recent container logs:"
     docker logs --tail 25 "${CONTAINER_NAME}" 2>/dev/null || true
+    if [ -n "$PREVIOUS_IMAGE" ]; then
+        echo "🔄 Initiating automatic rollback to previous container image..."
+        docker stop "${CONTAINER_NAME}" 2>/dev/null || true
+        docker rm "${CONTAINER_NAME}" 2>/dev/null || true
+        docker run -d \
+            --name "${CONTAINER_NAME}" \
+            --restart unless-stopped \
+            -p "${HOST_PORT}:${CONTAINER_PORT}" \
+            -e PORT="${CONTAINER_PORT}" \
+            -e APP_VERSION="1.0.0" \
+            -e APP_ENV="production" \
+            "${PREVIOUS_IMAGE}" >/dev/null 2>&1 || true
+        echo "✔ Rollback completed. Previous stable version restored."
+    fi
     echo "========================================================"
     exit 1
 fi
