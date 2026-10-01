@@ -57,3 +57,16 @@ def test_405_error_handler(client):
     assert data["error"] == "Method Not Allowed"
     assert data["status_code"] == 405
     assert "message" in data
+
+def test_application_logger():
+    """Test that the application logger is properly configured and accessible."""
+    from app import logger
+    assert logger.name == "automated-docker-app"
+    assert logger.level is not None
+
+def test_error_handler_logging(client, caplog):
+    """Test that 404 errors trigger warning log output."""
+    import logging
+    with caplog.at_level(logging.WARNING):
+        client.get("/route-that-does-not-exist")
+    assert any("Resource not found" in record.message for record in caplog.records)
