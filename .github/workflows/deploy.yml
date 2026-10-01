@@ -44,9 +44,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: 🔍 Validate Python syntax and compilation
+        run: |
+          python -m compileall app.py test_app.py
+
       - name: 🧪 Execute unit tests with Pytest
         run: |
-          pytest -v test_app.py
+          pytest -v --tb=short test_app.py
 
   # ============================================================================
   # Stage 2: Container Build & Push
