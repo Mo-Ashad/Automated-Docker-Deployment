@@ -14,6 +14,16 @@ services:
       - APP_ENV=production
       - PORT=5000
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD", "python", "-c", "import os, urllib.request; port = os.getenv('PORT', '5000'); urllib.request.urlopen(f'http://localhost:{port}/health')"]
       interval: 30s
