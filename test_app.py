@@ -70,3 +70,15 @@ def test_error_handler_logging(client, caplog):
     with caplog.at_level(logging.WARNING):
         client.get("/route-that-does-not-exist")
     assert any("Resource not found" in record.message for record in caplog.records)
+
+def test_metrics_endpoint(client):
+    """Test that the /api/metrics endpoint returns application and runtime statistics."""
+    response = client.get("/api/metrics")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "ok"
+    assert data["app_name"] == "Automated Docker Deployment App"
+    assert "version" in data
+    assert "uptime_seconds" in data
+    assert "python_version" in data
+    assert "hostname" in data
