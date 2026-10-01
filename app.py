@@ -1,4 +1,5 @@
 import os
+import sys
 import socket
 import datetime
 import logging
@@ -65,6 +66,21 @@ def info():
         "environment": APP_ENV,
         "hostname": socket.gethostname(),
         "start_time_utc": START_TIME.isoformat(),
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+    }), 200
+
+@app.route("/api/metrics")
+def metrics():
+    """Metrics endpoint exposing runtime and system statistics for monitoring."""
+    uptime_seconds = (datetime.datetime.now(datetime.timezone.utc) - START_TIME).total_seconds()
+    return jsonify({
+        "status": "ok",
+        "app_name": "Automated Docker Deployment App",
+        "version": APP_VERSION,
+        "environment": APP_ENV,
+        "uptime_seconds": round(uptime_seconds, 2),
+        "python_version": sys.version.split()[0],
+        "hostname": socket.gethostname(),
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
     }), 200
 
