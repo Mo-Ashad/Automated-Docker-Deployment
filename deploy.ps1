@@ -14,14 +14,14 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host "🚀 Starting Automated Docker Deployment" -ForegroundColor Cyan
-Write-Host "Image: $ImageName:$ImageTag" -ForegroundColor Gray
+Write-Host "Image: ${ImageName}:${ImageTag}" -ForegroundColor Gray
 Write-Host "Container: $ContainerName" -ForegroundColor Gray
 Write-Host "========================================================" -ForegroundColor Cyan
 
 # Step 1: Pull the latest image
 Write-Host "[1/4] 📦 Pulling the latest image..." -ForegroundColor Yellow
 try {
-    docker pull "$ImageName:$ImageTag" 2>$null
+    docker pull "${ImageName}:${ImageTag}" 2>$null
     Write-Host "✔ Successfully pulled latest image." -ForegroundColor Green
 } catch {
     Write-Host "ℹ Local image build fallback (or remote pull skipped)." -ForegroundColor Gray
@@ -29,8 +29,15 @@ try {
 
 # Step 2: Stop and remove existing container
 Write-Host "[2/4] 🛑 Checking for existing container..." -ForegroundColor Yellow
+$previousImage = ""
 $running = docker ps -q -f "name=^/${ContainerName}$"
 if ($running) {
+    try {
+        $inspectResult = docker inspect --format="{{.Image}}" $ContainerName 2>$null
+        if ($inspectResult) {
+            $previousImage = $inspectResult.Trim()
+        }
+    } catch { }
     Write-Host "Stopping existing container: $ContainerName..." -ForegroundColor Gray
     docker stop $ContainerName | Out-Null
 }
@@ -85,6 +92,20 @@ if ($healthy) {
     Write-Host "❌ Deployment Failed: Container did not pass health check!" -ForegroundColor Red
     Write-Host "Recent container logs:" -ForegroundColor Yellow
     docker logs --tail 25 $ContainerName 2>$null
+    if ($previousImage) {
+        Write-Host "🔄 Initiating automatic rollback to previous container image..." -ForegroundColor Yellow
+        docker stop $ContainerName 2>$null | Out-Null
+        docker rm $ContainerName 2>$null | Out-Null
+        docker run -d `
+            --name $ContainerName `
+            --restart unless-stopped `
+            -p "${HostPort}:${ContainerPort}" `
+            -e PORT="$ContainerPort" `
+            -e APP_VERSION="1.0.0" `
+            -e APP_ENV="production" `
+            $previousImage | Out-Null
+        Write-Host "✔ Rollback completed. Previous stable version restored." -ForegroundColor Green
+    }
     Write-Host "========================================================" -ForegroundColor Red
     exit 1
 }
